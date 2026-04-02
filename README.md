@@ -23,6 +23,7 @@ A portfolio-ready crypto wallet supporting **Ethereum (Sepolia)** and **Solana (
 - **Portfolio chart** — Interactive SVG chart showing total portfolio value over time (24H/7D/30D) with hover tooltip
 - **Watchlist** — Star tokens from market pages, track prices on dashboard with 24h change
 - **Export CSV** — Download transaction history as CSV from the activity page
+- **Multi-account** — Derive unlimited accounts from the same mnemonic with account selector in header
 
 ## Tech Stack
 

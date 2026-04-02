@@ -3,6 +3,7 @@
 import { useWallet } from "@/modules/wallet/hooks/use-wallet";
 import { useWalletStore } from "@/modules/wallet/hooks/use-wallet-store";
 import { NetworkBadge } from "@/modules/wallet/components/network-badge";
+import { AccountSelector } from "@/modules/wallet/components/account-selector";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/hooks/use-theme";
@@ -22,6 +23,7 @@ export function Header() {
   return (
     <header className="flex h-16 items-center justify-between border-b border-[var(--outline-dim)] bg-[var(--surface-dim)] px-6">
       <div className="flex items-center gap-2">
+        <AccountSelector />
         <NetworkBadge network={activeNetwork} onClick={handleNetworkToggle} />
         {isDemo && (
           <Badge variant="default" className="bg-amber/10 text-amber border-amber/30 text-[10px]">
