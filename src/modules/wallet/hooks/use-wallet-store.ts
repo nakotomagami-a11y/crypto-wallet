@@ -7,6 +7,7 @@ interface WalletStore {
   isLocked: boolean;
   isDemo: boolean;
   activeNetwork: NetworkId;
+  accountIndex: number;
   ethAddress: string | null;
   solAddress: string | null;
   mnemonic: string | null;
@@ -15,30 +16,36 @@ interface WalletStore {
   setDemo: () => void;
   lock: () => void;
   setNetwork: (network: NetworkId) => void;
+  setAccount: (index: number, ethAddress: string, solAddress: string) => void;
 }
 
 export const useWalletStore = create<WalletStore>((set) => ({
   isLocked: true,
   isDemo: false,
   activeNetwork: DEFAULT_NETWORK,
+  accountIndex: 0,
   ethAddress: null,
   solAddress: null,
   mnemonic: null,
 
   setUnlocked: (ethAddress, solAddress, mnemonic) =>
-    set({ isLocked: false, isDemo: false, ethAddress, solAddress, mnemonic }),
+    set({ isLocked: false, isDemo: false, accountIndex: 0, ethAddress, solAddress, mnemonic }),
 
   setDemo: () =>
     set({
       isLocked: false,
       isDemo: true,
+      accountIndex: 0,
       ethAddress: DEMO_ETH_ADDRESS,
       solAddress: DEMO_SOL_ADDRESS,
       mnemonic: null,
     }),
 
   lock: () =>
-    set({ isLocked: true, isDemo: false, ethAddress: null, solAddress: null, mnemonic: null }),
+    set({ isLocked: true, isDemo: false, accountIndex: 0, ethAddress: null, solAddress: null, mnemonic: null }),
 
   setNetwork: (network) => set({ activeNetwork: network }),
+
+  setAccount: (index, ethAddress, solAddress) =>
+    set({ accountIndex: index, ethAddress, solAddress }),
 }));
