@@ -36,7 +36,7 @@ A portfolio-ready crypto wallet supporting **Ethereum (Sepolia)** and **Solana (
 | Encryption | Web Crypto API (AES-GCM) |
 | Market data | CoinGecko API |
 | Transaction history | Blockscout API (ETH) + Solana RPC (SOL) |
-| Charts | Custom SVG (line + candlestick) |
+| Charts | TradingView Lightweight Charts v5 |
 
 ## Architecture
 
