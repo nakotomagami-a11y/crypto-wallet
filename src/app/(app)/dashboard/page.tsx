@@ -4,6 +4,7 @@ import { useBalances } from "@/modules/portfolio/hooks/use-balances";
 import { BalanceCard } from "@/modules/portfolio/components/balance-card";
 import { TokenList } from "@/modules/portfolio/components/token-list";
 import { PortfolioSummary } from "@/modules/portfolio/components/portfolio-summary";
+import { FaucetLinks } from "@/modules/portfolio/components/faucet-links";
 import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -63,6 +64,8 @@ export default function DashboardPage() {
           </div>
 
           <PortfolioSummary balances={nativeBalances} />
+
+          <FaucetLinks />
 
           {/* Full token list */}
           {hasTokens && <TokenList balances={balances} />}
