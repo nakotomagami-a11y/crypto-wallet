@@ -21,6 +21,7 @@ A portfolio-ready crypto wallet supporting **Ethereum (Sepolia)** and **Solana (
 - **Address book** — Save, select, and remove frequently used recipient addresses (persisted in localStorage)
 - **NFT gallery** — View ERC-721 NFTs (Ethereum via Blockscout) and Solana NFTs (via DAS API) in a grid
 - **Portfolio chart** — Interactive SVG chart showing total portfolio value over time (24H/7D/30D) with hover tooltip
+- **Watchlist** — Star tokens from market pages, track prices on dashboard with 24h change
 
 ## Tech Stack
 
