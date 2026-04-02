@@ -19,6 +19,7 @@ export const PAGE_ROUTES = {
   market: "/market",
   marketToken: (id: string) => `/market/${id}`,
   settings: "/settings",
+  nfts: "/nfts",
 } as const;
 
 // ─── External APIs ─────────────────────────────────────────────
@@ -40,6 +41,8 @@ export const EXTERNAL_API = {
   blockscout: {
     sepoliaTransactions: (address: string) =>
       `https://eth-sepolia.blockscout.com/api/v2/addresses/${address}/transactions`,
+    sepoliaNfts: (address: string) =>
+      `https://eth-sepolia.blockscout.com/api/v2/addresses/${address}/nft?type=ERC-721`,
   },
   solscan: {
     transaction: (signature: string) =>

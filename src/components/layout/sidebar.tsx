@@ -9,6 +9,7 @@ const NAV_ITEMS = [
   { href: PAGE_ROUTES.market, label: "Market", icon: "chart" },
   { href: PAGE_ROUTES.send, label: "Send", icon: "arrow-up-right" },
   { href: PAGE_ROUTES.receive, label: "Receive", icon: "arrow-down-left" },
+  { href: PAGE_ROUTES.nfts, label: "NFTs", icon: "image" },
   { href: PAGE_ROUTES.activity, label: "Activity", icon: "list" },
   { href: PAGE_ROUTES.settings, label: "Settings", icon: "settings" },
 ];
@@ -25,6 +26,9 @@ const ICON_MAP: Record<string, React.ReactNode> = {
   ),
   chart: (
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+  ),
+  image: (
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
   ),
   list: (
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/></svg>

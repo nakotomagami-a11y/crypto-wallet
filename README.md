@@ -19,6 +19,7 @@ A portfolio-ready crypto wallet supporting **Ethereum (Sepolia)** and **Solana (
 - **Demo mode** — One-click demo with pre-funded testnet addresses
 - **Faucet links** — Quick access to Sepolia ETH and Devnet SOL faucets from dashboard
 - **Address book** — Save, select, and remove frequently used recipient addresses (persisted in localStorage)
+- **NFT gallery** — View ERC-721 NFTs (Ethereum via Blockscout) and Solana NFTs (via DAS API) in a grid
 
 ## Tech Stack
 
