@@ -31,12 +31,12 @@ export const EXTERNAL_API = {
       `https://api.coingecko.com/api/v3/search?query=${encodeURIComponent(query)}`,
     coinDetail: (id: string) =>
       `https://api.coingecko.com/api/v3/coins/${id}?localization=false&tickers=false&community_data=false&developer_data=false`,
-    ohlc: (id: string, days: string) =>
-      `https://api.coingecko.com/api/v3/coins/${id}/ohlc?vs_currency=usd&days=${days}`,
-    marketChart: (id: string, days: string) =>
-      `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=${days}`,
-    simplePrice: (ids: string) =>
-      `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`,
+    ohlc: (id: string, days: string, currency = "usd") =>
+      `https://api.coingecko.com/api/v3/coins/${id}/ohlc?vs_currency=${currency}&days=${days}`,
+    marketChart: (id: string, days: string, currency = "usd") =>
+      `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=${currency}&days=${days}`,
+    simplePrice: (ids: string, currency = "usd") =>
+      `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=${currency}&include_24hr_change=true`,
   },
   blockscout: {
     sepoliaTransactions: (address: string) =>

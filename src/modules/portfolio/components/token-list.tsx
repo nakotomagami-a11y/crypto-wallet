@@ -3,6 +3,7 @@
 import type { TokenBalance } from "@/types/transaction";
 import { formatBalance } from "@/modules/portfolio/utils/format-balance";
 import { usePrices } from "@/modules/portfolio/hooks/use-prices";
+import { useCurrency } from "@/hooks/use-currency";
 
 interface TokenListProps {
   balances: TokenBalance[];
@@ -29,6 +30,7 @@ const COINGECKO_ID_MAP: Record<string, string> = {
 
 export function TokenList({ balances }: TokenListProps) {
   const { data: prices } = usePrices();
+  const { currency, symbol: currencySymbol } = useCurrency();
 
   if (balances.length === 0) return null;
 
@@ -76,10 +78,10 @@ export function TokenList({ balances }: TokenListProps) {
                 {(() => {
                   const coinId = COINGECKO_ID_MAP[token.symbol];
                   const price = coinId ? prices?.[coinId as keyof typeof prices] : null;
-                  const usdValue = price ? parseFloat(token.balance) * price.usd : null;
-                  return usdValue !== null ? (
+                  const fiatValue = price ? parseFloat(token.balance) * (price[currency] ?? 0) : null;
+                  return fiatValue !== null && fiatValue > 0 ? (
                     <p className="text-xs text-muted-foreground">
-                      ${usdValue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      {currencySymbol}{fiatValue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </p>
                   ) : (
                     <p className="text-xs text-muted-foreground capitalize">

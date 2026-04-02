@@ -3,22 +3,24 @@
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useWatchlist } from "@/modules/market/hooks/use-watchlist";
+import { useCurrency } from "@/hooks/use-currency";
 import { EXTERNAL_API } from "@/lib/routes";
 import { PAGE_ROUTES } from "@/lib/routes";
 
 interface PriceData {
-  [id: string]: { usd: number; usd_24h_change: number };
+  [id: string]: Record<string, number>;
 }
 
 export function WatchlistCard() {
   const { items, removeFromWatchlist } = useWatchlist();
+  const { currency, symbol: currencySymbol } = useCurrency();
 
   const ids = items.map((i) => i.id).join(",");
   const { data: prices } = useQuery<PriceData>({
-    queryKey: ["watchlistPrices", ids],
+    queryKey: ["watchlistPrices", ids, currency],
     queryFn: async () => {
       if (!ids) return {};
-      const res = await fetch(EXTERNAL_API.coingecko.simplePrice(ids));
+      const res = await fetch(EXTERNAL_API.coingecko.simplePrice(ids, currency));
       if (!res.ok) return {};
       return res.json();
     },
@@ -39,7 +41,7 @@ export function WatchlistCard() {
       <div className="divide-y divide-[var(--outline-dim)]">
         {items.map((item) => {
           const price = prices?.[item.id];
-          const change = price?.usd_24h_change;
+          const change = price?.[`${currency}_24h_change`];
           return (
             <div
               key={item.id}
@@ -60,7 +62,7 @@ export function WatchlistCard() {
                   {price ? (
                     <>
                       <p className="font-mono text-sm font-medium">
-                        ${price.usd.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: price.usd >= 1 ? 2 : 6 })}
+                        {currencySymbol}{(price[currency] ?? 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: (price[currency] ?? 0) >= 1 ? 2 : 6 })}
                       </p>
                       {change !== undefined && (
                         <p className={`text-xs ${change >= 0 ? "text-chart-green" : "text-chart-red"}`}>

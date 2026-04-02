@@ -8,6 +8,7 @@ import { FaucetLinks } from "@/modules/portfolio/components/faucet-links";
 import { PortfolioChart } from "@/modules/portfolio/components/portfolio-chart";
 import { WatchlistCard } from "@/modules/portfolio/components/watchlist-card";
 import { usePrices } from "@/modules/portfolio/hooks/use-prices";
+import { useCurrency } from "@/hooks/use-currency";
 import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
 import type { NetworkId } from "@/types/wallet";
@@ -16,6 +17,7 @@ import { PAGE_ROUTES } from "@/lib/routes";
 export default function DashboardPage() {
   const { balances, isLoading, error } = useBalances();
   const { data: prices } = usePrices();
+  const { currency } = useCurrency();
 
   // Native tokens (ETH, SOL) for the big balance cards
   const nativeBalances = balances.filter((b) => !b.contractAddress);
@@ -66,8 +68,8 @@ export default function DashboardPage() {
                   <BalanceCard
                     key={b.network}
                     balance={b}
-                    usdPrice={price?.usd}
-                    usd24hChange={price?.usd_24h_change}
+                    fiatPrice={price?.[currency]}
+                    change24h={price?.[`${currency}_24h_change`]}
                   />
                 );
               })

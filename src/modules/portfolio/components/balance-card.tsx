@@ -2,11 +2,12 @@
 
 import type { TokenBalance } from "@/types/transaction";
 import { formatBalance } from "@/modules/portfolio/utils/format-balance";
+import { useCurrency } from "@/hooks/use-currency";
 
 interface BalanceCardProps {
   balance: TokenBalance;
-  usdPrice?: number;
-  usd24hChange?: number;
+  fiatPrice?: number;
+  change24h?: number;
 }
 
 const NETWORK_COLORS: Record<string, string> = {
@@ -14,10 +15,11 @@ const NETWORK_COLORS: Record<string, string> = {
   solana: "#9945FF",
 };
 
-export function BalanceCard({ balance, usdPrice, usd24hChange }: BalanceCardProps) {
+export function BalanceCard({ balance, fiatPrice, change24h }: BalanceCardProps) {
   const color = NETWORK_COLORS[balance.network] ?? "#888";
   const displayBalance = formatBalance(balance.balance);
-  const usdValue = usdPrice ? parseFloat(balance.balance) * usdPrice : null;
+  const fiatValue = fiatPrice ? parseFloat(balance.balance) * fiatPrice : null;
+  const { symbol: currencySymbol } = useCurrency();
 
   return (
     <div className="glass-card glass-card-hover rounded-2xl p-6">
@@ -36,14 +38,14 @@ export function BalanceCard({ balance, usdPrice, usd24hChange }: BalanceCardProp
         </div>
         <div className="text-right">
           <p className="font-mono text-lg font-semibold">{displayBalance}</p>
-          {usdValue !== null ? (
+          {fiatValue !== null ? (
             <div className="flex items-center gap-1.5 justify-end">
               <span className="text-sm text-muted-foreground">
-                ${usdValue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                {currencySymbol}{fiatValue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
-              {usd24hChange !== undefined && usd24hChange !== null && (
-                <span className={`text-xs font-medium ${usd24hChange >= 0 ? "text-chart-green" : "text-chart-red"}`}>
-                  {usd24hChange >= 0 ? "+" : ""}{usd24hChange.toFixed(1)}%
+              {change24h !== undefined && change24h !== null && (
+                <span className={`text-xs font-medium ${change24h >= 0 ? "text-chart-green" : "text-chart-red"}`}>
+                  {change24h >= 0 ? "+" : ""}{change24h.toFixed(1)}%
                 </span>
               )}
             </div>
