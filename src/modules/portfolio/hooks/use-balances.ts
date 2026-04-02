@@ -8,6 +8,41 @@ import { CHAINS } from "@/lib/chains";
 import { queryKeys } from "@/lib/query-keys";
 import type { TokenBalance } from "@/types/transaction";
 
+// Metaplex Token Metadata program ID
+const TOKEN_METADATA_PROGRAM = new PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s");
+
+async function resolveTokenName(
+  connection: Connection,
+  mintAddress: string
+): Promise<{ name: string; symbol: string } | null> {
+  const mint = new PublicKey(mintAddress);
+  const [metadataPDA] = PublicKey.findProgramAddressSync(
+    [Buffer.from("metadata"), TOKEN_METADATA_PROGRAM.toBytes(), mint.toBytes()],
+    TOKEN_METADATA_PROGRAM
+  );
+
+  const accountInfo = await connection.getAccountInfo(metadataPDA);
+  if (!accountInfo?.data) return null;
+
+  // Metaplex metadata layout: name starts at byte 65 (32 bytes), symbol at 101 (10 bytes)
+  // The first byte is a key, then update authority (32), mint (32), then name (4-byte length + string)
+  const data = accountInfo.data;
+  try {
+    // Name: offset 65, max 32 bytes (padded with null bytes)
+    const nameBytes = data.subarray(65, 101);
+    const name = Buffer.from(nameBytes).toString("utf8").replace(/\0/g, "").trim();
+
+    // Symbol: offset 101, max 10 bytes
+    const symbolBytes = data.subarray(101, 115);
+    const symbol = Buffer.from(symbolBytes).toString("utf8").replace(/\0/g, "").trim();
+
+    if (name && symbol) return { name, symbol };
+  } catch {
+    return null;
+  }
+  return null;
+}
+
 // ERC-20 ABI for balanceOf + decimals + symbol
 const ERC20_ABI = [
   "function balanceOf(address) view returns (uint256)",
@@ -76,26 +111,47 @@ async function fetchSolBalances(address: string): Promise<TokenBalance[]> {
     network: "solana",
   });
 
-  // SPL tokens
+  // SPL tokens — fetch accounts, then try to resolve names via Metaplex metadata
   try {
     const tokenAccounts = await connection.getParsedTokenAccountsByOwner(pubkey, {
       programId: new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"),
     });
 
-    for (const { account } of tokenAccounts.value) {
+    // Filter to non-zero balances and cap at 20 tokens
+    const nonZero = tokenAccounts.value
+      .filter((ta) => {
+        const amount = ta.account.data.parsed?.info?.tokenAmount;
+        return amount && amount.uiAmount > 0;
+      })
+      .slice(0, 20);
+
+    for (const { account } of nonZero) {
       const parsed = account.data.parsed?.info;
       if (!parsed) continue;
       const amount = parsed.tokenAmount;
-      if (amount.uiAmount > 0) {
-        results.push({
-          symbol: parsed.mint.slice(0, 6) + "...",
-          name: "SPL Token",
-          balance: amount.uiAmountString ?? amount.uiAmount.toString(),
-          decimals: amount.decimals,
-          network: "solana",
-          contractAddress: parsed.mint,
-        });
+      const mint = parsed.mint as string;
+
+      // Try to read token name from Metaplex Token Metadata program
+      let tokenName = "SPL Token";
+      let tokenSymbol = mint.slice(0, 4) + "..." + mint.slice(-4);
+      try {
+        const metadataName = await resolveTokenName(connection, mint);
+        if (metadataName) {
+          tokenName = metadataName.name;
+          tokenSymbol = metadataName.symbol;
+        }
+      } catch {
+        // Metadata not available — use truncated mint
       }
+
+      results.push({
+        symbol: tokenSymbol,
+        name: tokenName,
+        balance: amount.uiAmountString ?? amount.uiAmount.toString(),
+        decimals: amount.decimals,
+        network: "solana",
+        contractAddress: mint,
+      });
     }
   } catch {
     // SPL token fetch may fail on devnet — skip
