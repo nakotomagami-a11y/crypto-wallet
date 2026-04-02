@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { createChart, ColorType, LineSeries, AreaSeries, CandlestickSeries, type IChartApi, type CandlestickData, type LineData, type Time } from "lightweight-charts";
+import { createChart, ColorType, LineSeries, AreaSeries, CandlestickSeries, type IChartApi } from "lightweight-charts";
 import { useTokenChart } from "@/modules/market/hooks/use-token-chart";
+import { toLineDataFromPrices, toCandlestickData } from "@/lib/chart-utils";
 import { IntervalSelector } from "./interval-selector";
 import { ChartTypeToggle } from "./chart-type-toggle";
 import { ChartInterval, ChartType, type PricePoint, type OHLCDataPoint } from "@/types/market";
@@ -47,11 +48,7 @@ function MarketChartContainer({
       const points = data as PricePoint[];
       const isUp = points.length >= 2 && points[points.length - 1].price >= points[0].price;
       const color = isUp ? "#30D158" : "#a91d3a";
-
-      const lineData: LineData<Time>[] = points.map((d) => ({
-        time: (d.timestamp / 1000) as Time,
-        value: d.price,
-      }));
+      const lineData = toLineDataFromPrices(points);
 
       const series = chart.addSeries(LineSeries, {
         color,
@@ -70,20 +67,13 @@ function MarketChartContainer({
       area.setData(lineData);
     } else {
       const ohlc = data as OHLCDataPoint[];
-      const candleData: CandlestickData<Time>[] = ohlc.map((d) => ({
-        time: (d.timestamp / 1000) as Time,
-        open: d.open,
-        high: d.high,
-        low: d.low,
-        close: d.close,
-      }));
 
       const series = chart.addSeries(CandlestickSeries, {
         upColor: "#30D158", downColor: "#a91d3a",
         borderUpColor: "#30D158", borderDownColor: "#a91d3a",
         wickUpColor: "#30D158", wickDownColor: "#a91d3a",
       });
-      series.setData(candleData);
+      series.setData(toCandlestickData(ohlc));
     }
 
     chart.timeScale().fitContent();

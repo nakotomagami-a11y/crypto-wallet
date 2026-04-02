@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { createChart, ColorType, LineSeries, AreaSeries, CandlestickSeries, type IChartApi, type CandlestickData, type LineData, type Time } from "lightweight-charts";
+import { createChart, ColorType, LineSeries, AreaSeries, CandlestickSeries, type IChartApi } from "lightweight-charts";
 import { usePortfolioHistory, type PortfolioPoint } from "@/modules/portfolio/hooks/use-portfolio-history";
+import { toLineDataFromValues, groupIntoCandlesticks } from "@/lib/chart-utils";
 import { ChartTypeToggle } from "@/modules/market/components/chart-type-toggle";
 import { ChartType } from "@/types/market";
 
@@ -13,30 +14,6 @@ const DAYS_OPTIONS = [
 ];
 
 const CHART_HEIGHT = 220;
-
-function toLineData(data: PortfolioPoint[]): LineData<Time>[] {
-  return data.map((d) => ({
-    time: (d.timestamp / 1000) as Time,
-    value: d.value,
-  }));
-}
-
-function toCandleData(data: PortfolioPoint[]): CandlestickData<Time>[] {
-  const candleSize = Math.max(2, Math.floor(data.length / 40));
-  const candles: CandlestickData<Time>[] = [];
-  for (let i = 0; i < data.length; i += candleSize) {
-    const slice = data.slice(i, i + candleSize);
-    const vals = slice.map((d) => d.value);
-    candles.push({
-      time: (slice[0].timestamp / 1000) as Time,
-      open: slice[0].value,
-      close: slice[slice.length - 1].value,
-      high: Math.max(...vals),
-      low: Math.min(...vals),
-    });
-  }
-  return candles;
-}
 
 function ChartContainer({ data, chartType }: { data: PortfolioPoint[]; chartType: ChartType }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -68,7 +45,7 @@ function ChartContainer({ data, chartType }: { data: PortfolioPoint[]; chartType
     chartRef.current = chart;
 
     if (chartType === ChartType.Line) {
-      const lineData = toLineData(data);
+      const lineData = toLineDataFromValues(data);
       const series = chart.addSeries(LineSeries, {
         color: lineColor,
         lineWidth: 2,
@@ -93,7 +70,7 @@ function ChartContainer({ data, chartType }: { data: PortfolioPoint[]; chartType
         wickUpColor: "#30D158", wickDownColor: "#a91d3a",
         priceFormat: { type: "price", precision: 2, minMove: 0.01 },
       });
-      series.setData(toCandleData(data));
+      series.setData(groupIntoCandlesticks(data));
     }
 
     chart.timeScale().fitContent();
