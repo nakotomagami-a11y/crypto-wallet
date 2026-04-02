@@ -17,6 +17,7 @@ A portfolio-ready crypto wallet supporting **Ethereum (Sepolia)** and **Solana (
 - **Network switching** — Toggle between Ethereum Sepolia and Solana Devnet
 - **Light / Dark mode** — Theme toggle with genys-inspired design system
 - **Demo mode** — One-click demo with pre-funded testnet addresses
+- **Faucet links** — Quick access to Sepolia ETH and Devnet SOL faucets from dashboard
 
 ## Tech Stack
 
