@@ -98,15 +98,20 @@ export function AccountSelector() {
               </button>
             ))}
           </div>
-          <button
-            onClick={handleAddAccount}
-            className="flex w-full items-center gap-2.5 px-3 py-2.5 text-left border-t border-[var(--outline-dim)] transition-colors hover:bg-[rgba(255,255,255,0.04)]"
-          >
-            <div className="flex h-6 w-6 items-center justify-center rounded-full border border-dashed border-[var(--outline)] text-muted-foreground">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-            </div>
-            <span className="text-xs text-muted-foreground">Add Account</span>
-          </button>
+          <div className="border-t border-[var(--outline-dim)]">
+            <button
+              onClick={handleAddAccount}
+              className="flex w-full items-center gap-2.5 px-3 py-2.5 text-left transition-colors hover:bg-[rgba(255,255,255,0.04)]"
+            >
+              <div className="flex h-6 w-6 items-center justify-center rounded-full border border-dashed border-[var(--outline)] text-muted-foreground">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+              </div>
+              <div>
+                <span className="text-xs text-muted-foreground">Derive Account</span>
+                <p className="text-[10px] text-muted-foreground opacity-60">New HD path from same mnemonic</p>
+              </div>
+            </button>
+          </div>
         </div>
       )}
     </div>
