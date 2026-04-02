@@ -2,6 +2,7 @@
 
 import type { TokenBalance } from "@/types/transaction";
 import { formatBalance } from "@/modules/portfolio/utils/format-balance";
+import { usePrices } from "@/modules/portfolio/hooks/use-prices";
 
 interface TokenListProps {
   balances: TokenBalance[];
@@ -21,7 +22,14 @@ const TOKEN_COLORS: Record<string, string> = {
   LINK: "#2A5ADA",
 };
 
+const COINGECKO_ID_MAP: Record<string, string> = {
+  ETH: "ethereum",
+  SOL: "solana",
+};
+
 export function TokenList({ balances }: TokenListProps) {
+  const { data: prices } = usePrices();
+
   if (balances.length === 0) return null;
 
   return (
@@ -65,9 +73,20 @@ export function TokenList({ balances }: TokenListProps) {
                 <p className="font-mono text-sm font-semibold">
                   {formatBalance(token.balance)}
                 </p>
-                <p className="text-xs text-muted-foreground capitalize">
-                  {token.network}
-                </p>
+                {(() => {
+                  const coinId = COINGECKO_ID_MAP[token.symbol];
+                  const price = coinId ? prices?.[coinId as keyof typeof prices] : null;
+                  const usdValue = price ? parseFloat(token.balance) * price.usd : null;
+                  return usdValue !== null ? (
+                    <p className="text-xs text-muted-foreground">
+                      ${usdValue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </p>
+                  ) : (
+                    <p className="text-xs text-muted-foreground capitalize">
+                      {token.network}
+                    </p>
+                  );
+                })()}
               </div>
             </div>
           );

@@ -5,11 +5,14 @@ import { BalanceCard } from "@/modules/portfolio/components/balance-card";
 import { TokenList } from "@/modules/portfolio/components/token-list";
 import { PortfolioSummary } from "@/modules/portfolio/components/portfolio-summary";
 import { FaucetLinks } from "@/modules/portfolio/components/faucet-links";
+import { usePrices } from "@/modules/portfolio/hooks/use-prices";
 import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
+import type { NetworkId } from "@/types/wallet";
 
 export default function DashboardPage() {
   const { balances, isLoading, error } = useBalances();
+  const { data: prices } = usePrices();
 
   // Native tokens (ETH, SOL) for the big balance cards
   const nativeBalances = balances.filter((b) => !b.contractAddress);
@@ -53,9 +56,18 @@ export default function DashboardPage() {
           {/* Native balance cards */}
           <div className="grid gap-4 md:grid-cols-2">
             {nativeBalances.length > 0 ? (
-              nativeBalances.map((b) => (
-                <BalanceCard key={b.network} balance={b} />
-              ))
+              nativeBalances.map((b) => {
+                const coinId = b.network === "ethereum" ? "ethereum" : "solana";
+                const price = prices?.[coinId as keyof typeof prices];
+                return (
+                  <BalanceCard
+                    key={b.network}
+                    balance={b}
+                    usdPrice={price?.usd}
+                    usd24hChange={price?.usd_24h_change}
+                  />
+                );
+              })
             ) : !error ? (
               <p className="text-sm text-muted-foreground col-span-2">
                 No balance data available yet.
