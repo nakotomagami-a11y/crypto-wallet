@@ -17,6 +17,7 @@ import { useSend } from "@/modules/send/hooks/use-send";
 import { validateAddress } from "@/modules/send/utils/validate-address";
 import { AddressBookPicker } from "@/modules/send/components/address-book-picker";
 import { TokenSelector, type SelectedToken } from "@/modules/send/components/token-selector";
+import { GasEstimator } from "@/modules/send/components/gas-estimator";
 import { CHAINS } from "@/lib/chains";
 import type { NetworkId } from "@/types/wallet";
 import { toast } from "sonner";
@@ -118,6 +119,8 @@ export function SendForm() {
               placeholder="0.0"
             />
           </div>
+
+          <GasEstimator network={activeNetwork} to={to} />
 
           {error && <p className="text-sm text-destructive">{error}</p>}
 
