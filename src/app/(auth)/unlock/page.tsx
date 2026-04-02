@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { PasswordForm } from "@/modules/wallet/components/password-form";
 import { useWallet } from "@/modules/wallet/hooks/use-wallet";
 import { useWalletStore } from "@/modules/wallet/hooks/use-wallet-store";
+import { PAGE_ROUTES } from "@/lib/routes";
 
 export default function UnlockPage() {
   const [error, setError] = useState<string | null>(null);
@@ -20,7 +21,7 @@ export default function UnlockPage() {
       setLoading(true);
       setError(null);
       await unlock(password);
-      router.push("/dashboard");
+      router.push(PAGE_ROUTES.dashboard);
     } catch {
       setError("Wrong password or corrupted vault");
     } finally {
@@ -51,14 +52,14 @@ export default function UnlockPage() {
           className="w-full"
           onClick={() => {
             setDemo();
-            router.push("/dashboard");
+            router.push(PAGE_ROUTES.dashboard);
           }}
         >
           Try Demo Mode
         </Button>
         <p className="text-center text-sm text-muted-foreground">
           Want to start fresh?{" "}
-          <Link href="/create" className="text-primary underline">
+          <Link href={PAGE_ROUTES.create} className="text-primary underline">
             Create new wallet
           </Link>
         </p>

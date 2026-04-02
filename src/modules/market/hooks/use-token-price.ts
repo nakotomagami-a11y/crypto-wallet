@@ -3,13 +3,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
 import type { TokenDetail } from "@/types/market";
-
-const COINGECKO_BASE = "https://api.coingecko.com/api/v3";
+import { EXTERNAL_API } from "@/lib/routes";
 
 async function fetchTokenDetail(id: string): Promise<TokenDetail> {
-  const res = await fetch(
-    `${COINGECKO_BASE}/coins/${id}?localization=false&tickers=false&community_data=false&developer_data=false`
-  );
+  const res = await fetch(EXTERNAL_API.coingecko.coinDetail(id));
   if (!res.ok) throw new Error("Failed to fetch token");
   const data = await res.json();
   const market = data.market_data;

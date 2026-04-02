@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { useTokenSearch } from "@/modules/market/hooks/use-token-search";
+import { PAGE_ROUTES } from "@/lib/routes";
 
 export function TokenSearch() {
   const [query, setQuery] = useState("");
@@ -31,7 +32,7 @@ export function TokenSearch() {
   function handleSelect(id: string) {
     setOpen(false);
     setQuery("");
-    router.push(`/market/${id}`);
+    router.push(PAGE_ROUTES.marketToken(id));
   }
 
   return (

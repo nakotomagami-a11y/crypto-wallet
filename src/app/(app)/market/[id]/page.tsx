@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useTokenPrice } from "@/modules/market/hooks/use-token-price";
 import { TokenDetail } from "@/modules/market/components/token-detail";
 import { PriceChart } from "@/modules/market/components/price-chart";
+import { PAGE_ROUTES } from "@/lib/routes";
 
 export default function TokenPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -14,7 +15,7 @@ export default function TokenPage({ params }: { params: Promise<{ id: string }> 
     <div className="mx-auto max-w-3xl space-y-6">
       <div className="flex items-center gap-2 text-sm">
         <Link
-          href="/market"
+          href={PAGE_ROUTES.market}
           className="text-muted-foreground hover:text-foreground transition-colors"
         >
           Market

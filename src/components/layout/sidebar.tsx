@@ -2,14 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { PAGE_ROUTES } from "@/lib/routes";
 
 const NAV_ITEMS = [
-  { href: "/dashboard", label: "Dashboard", icon: "grid" },
-  { href: "/market", label: "Market", icon: "chart" },
-  { href: "/send", label: "Send", icon: "arrow-up-right" },
-  { href: "/receive", label: "Receive", icon: "arrow-down-left" },
-  { href: "/activity", label: "Activity", icon: "list" },
-  { href: "/settings", label: "Settings", icon: "settings" },
+  { href: PAGE_ROUTES.dashboard, label: "Dashboard", icon: "grid" },
+  { href: PAGE_ROUTES.market, label: "Market", icon: "chart" },
+  { href: PAGE_ROUTES.send, label: "Send", icon: "arrow-up-right" },
+  { href: PAGE_ROUTES.receive, label: "Receive", icon: "arrow-down-left" },
+  { href: PAGE_ROUTES.activity, label: "Activity", icon: "list" },
+  { href: PAGE_ROUTES.settings, label: "Settings", icon: "settings" },
 ];
 
 const ICON_MAP: Record<string, React.ReactNode> = {
@@ -39,7 +40,7 @@ export function Sidebar() {
   return (
     <aside className="flex h-full w-64 flex-col border-r border-[var(--outline-dim)] bg-[var(--surface-dim)]">
       <div className="flex h-16 items-center border-b border-[var(--outline-dim)] px-6">
-        <Link href="/dashboard" className="flex items-center gap-2">
+        <Link href={PAGE_ROUTES.dashboard} className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-eth-blue text-white font-bold text-sm">
             V
           </div>

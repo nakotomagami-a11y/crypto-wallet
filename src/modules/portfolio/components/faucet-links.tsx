@@ -1,15 +1,17 @@
 "use client";
 
+import { EXTERNAL_API } from "@/lib/routes";
+
 const FAUCETS = [
   {
     name: "Sepolia ETH",
-    url: "https://www.alchemy.com/faucets/ethereum-sepolia",
+    url: EXTERNAL_API.faucets.sepoliaEth,
     color: "#627EEA",
     symbol: "ETH",
   },
   {
     name: "Devnet SOL",
-    url: "https://faucet.solana.com/",
+    url: EXTERNAL_API.faucets.devnetSol,
     color: "#9945FF",
     symbol: "SOL",
   },

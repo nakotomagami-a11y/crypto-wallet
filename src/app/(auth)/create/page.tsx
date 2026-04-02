@@ -8,6 +8,7 @@ import { MnemonicDisplay } from "@/modules/wallet/components/mnemonic-display";
 import { PasswordForm } from "@/modules/wallet/components/password-form";
 import { useWallet } from "@/modules/wallet/hooks/use-wallet";
 import { useWalletStore } from "@/modules/wallet/hooks/use-wallet-store";
+import { PAGE_ROUTES } from "@/lib/routes";
 
 type Step = "password" | "mnemonic";
 
@@ -35,7 +36,7 @@ export default function CreatePage() {
   }
 
   function handleMnemonicConfirm() {
-    router.push("/dashboard");
+    router.push(PAGE_ROUTES.dashboard);
   }
 
   return (
@@ -73,14 +74,14 @@ export default function CreatePage() {
           className="w-full"
           onClick={() => {
             setDemo();
-            router.push("/dashboard");
+            router.push(PAGE_ROUTES.dashboard);
           }}
         >
           Try Demo Mode
         </Button>
         <p className="text-center text-sm text-muted-foreground">
           Already have a wallet?{" "}
-          <Link href="/import" className="text-primary underline">
+          <Link href={PAGE_ROUTES.import} className="text-primary underline">
             Import
           </Link>
         </p>

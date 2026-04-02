@@ -35,37 +35,7 @@ export function AddressBookPicker({ network, onSelect, currentAddress }: Address
 
   return (
     <div className="space-y-2">
-      {saved.length > 0 && (
-        <div>
-          <Label className="text-xs text-muted-foreground">Saved Addresses</Label>
-          <div className="mt-1 space-y-1">
-            {saved.map((entry) => (
-              <div
-                key={entry.address}
-                className="flex items-center gap-2 rounded-lg border border-[var(--outline-dim)] px-3 py-2 transition-colors hover:border-[var(--outline)]"
-              >
-                <button
-                  onClick={() => onSelect(entry.address)}
-                  className="flex-1 text-left min-w-0"
-                >
-                  <p className="text-xs font-medium truncate">{entry.label}</p>
-                  <p className="font-mono text-[10px] text-muted-foreground truncate">
-                    {entry.address}
-                  </p>
-                </button>
-                <button
-                  onClick={() => handleRemove(entry)}
-                  className="shrink-0 text-muted-foreground hover:text-destructive transition-colors"
-                  title="Remove"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
+      {/* Save button / form — always visible right below the input */}
       {showAdd ? (
         <div className="flex items-end gap-2">
           <div className="flex-1">
@@ -92,6 +62,38 @@ export function AddressBookPicker({ network, onSelect, currentAddress }: Address
         >
           + Save this address
         </button>
+      )}
+
+      {/* Saved addresses list */}
+      {saved.length > 0 && (
+        <div>
+          <Label className="text-xs text-muted-foreground">Saved Addresses</Label>
+          <div className="mt-1 space-y-1 max-h-40 overflow-y-auto">
+            {saved.map((entry) => (
+              <div
+                key={entry.address}
+                className="flex items-center gap-2 rounded-lg border border-[var(--outline-dim)] px-3 py-2 transition-colors hover:border-[var(--outline)]"
+              >
+                <button
+                  onClick={() => onSelect(entry.address)}
+                  className="flex-1 text-left min-w-0"
+                >
+                  <p className="text-xs font-medium truncate">{entry.label}</p>
+                  <p className="font-mono text-[10px] text-muted-foreground truncate">
+                    {entry.address}
+                  </p>
+                </button>
+                <button
+                  onClick={() => handleRemove(entry)}
+                  className="shrink-0 text-muted-foreground hover:text-destructive transition-colors"
+                  title="Remove"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );

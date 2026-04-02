@@ -7,6 +7,7 @@ import { CHAINS } from "@/lib/chains";
 import { queryKeys } from "@/lib/query-keys";
 import { TransactionStatus, TransactionDirection, type Transaction } from "@/types/transaction";
 import type { NetworkId } from "@/types/wallet";
+import { EXTERNAL_API } from "@/lib/routes";
 
 interface BlockscoutTx {
   hash: string;
@@ -19,7 +20,7 @@ interface BlockscoutTx {
 
 async function fetchEthTransactions(address: string): Promise<Transaction[]> {
   // Use Blockscout API (free, no key required)
-  const url = `https://eth-sepolia.blockscout.com/api/v2/addresses/${address}/transactions`;
+  const url = EXTERNAL_API.blockscout.sepoliaTransactions(address);
   const res = await fetch(url);
   if (!res.ok) return [];
   const json = await res.json();
@@ -35,7 +36,7 @@ async function fetchEthTransactions(address: string): Promise<Transaction[]> {
     status: tx.status === "ok" ? TransactionStatus.Confirmed : TransactionStatus.Failed,
     direction:
       tx.from.hash.toLowerCase() === address.toLowerCase() ? TransactionDirection.Sent : TransactionDirection.Received,
-    explorerUrl: `${CHAINS.ethereum.explorerUrl}/tx/${tx.hash}`,
+    explorerUrl: EXTERNAL_API.etherscan.transaction(tx.hash),
   }));
 }
 
@@ -55,7 +56,7 @@ async function fetchSolTransactions(address: string): Promise<Transaction[]> {
     timestamp: (sig.blockTime ?? 0) * 1000,
     status: sig.err ? TransactionStatus.Failed : TransactionStatus.Confirmed,
     direction: TransactionDirection.Sent,
-    explorerUrl: `https://solscan.io/tx/${sig.signature}?cluster=devnet`,
+    explorerUrl: EXTERNAL_API.solscan.transaction(sig.signature),
   }));
 }
 

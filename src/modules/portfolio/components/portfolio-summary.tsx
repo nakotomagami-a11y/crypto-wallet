@@ -3,6 +3,7 @@
 import { useWalletStore } from "@/modules/wallet/hooks/use-wallet-store";
 import { formatBalance } from "@/modules/portfolio/utils/format-balance";
 import type { TokenBalance } from "@/types/transaction";
+import { EXTERNAL_API } from "@/lib/routes";
 
 interface PortfolioSummaryProps {
   balances: TokenBalance[];
@@ -35,7 +36,7 @@ export function PortfolioSummary({ balances }: PortfolioSummaryProps) {
             </div>
             {ethAddress && (
               <a
-                href={`https://sepolia.etherscan.io/address/${ethAddress}`}
+                href={EXTERNAL_API.etherscan.address(ethAddress)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-eth-blue hover:bg-eth-blue/10 transition-colors"
@@ -51,7 +52,7 @@ export function PortfolioSummary({ balances }: PortfolioSummaryProps) {
             </div>
             {solAddress && (
               <a
-                href={`https://solscan.io/account/${solAddress}?cluster=devnet`}
+                href={EXTERNAL_API.solscan.account(solAddress)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-sol-purple hover:bg-sol-purple/10 transition-colors"

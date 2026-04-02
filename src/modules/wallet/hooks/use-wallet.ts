@@ -15,6 +15,7 @@ import {
   loadVault,
   clearVault,
 } from "../utils/crypto";
+import { PAGE_ROUTES } from "@/lib/routes";
 
 export function useWallet() {
   const router = useRouter();
@@ -59,7 +60,7 @@ export function useWallet() {
 
   const lock = useCallback(() => {
     store.lock();
-    router.push("/unlock");
+    router.push(PAGE_ROUTES.unlock);
   }, [store, router]);
 
   const exportMnemonic = useCallback(
@@ -74,7 +75,7 @@ export function useWallet() {
   const resetWallet = useCallback(() => {
     clearVault();
     store.lock();
-    router.push("/create");
+    router.push(PAGE_ROUTES.create);
   }, [store, router]);
 
   return {

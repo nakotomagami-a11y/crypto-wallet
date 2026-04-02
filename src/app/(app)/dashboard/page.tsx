@@ -9,6 +9,7 @@ import { usePrices } from "@/modules/portfolio/hooks/use-prices";
 import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
 import type { NetworkId } from "@/types/wallet";
+import { PAGE_ROUTES } from "@/lib/routes";
 
 export default function DashboardPage() {
   const { balances, isLoading, error } = useBalances();
@@ -24,10 +25,10 @@ export default function DashboardPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Dashboard</h1>
         <div className="flex gap-2">
-          <Link href="/send" className={buttonVariants({ size: "sm" })}>
+          <Link href={PAGE_ROUTES.send} className={buttonVariants({ size: "sm" })}>
             Send
           </Link>
-          <Link href="/receive" className={buttonVariants({ variant: "outline", size: "sm" })}>
+          <Link href={PAGE_ROUTES.receive} className={buttonVariants({ variant: "outline", size: "sm" })}>
             Receive
           </Link>
         </div>

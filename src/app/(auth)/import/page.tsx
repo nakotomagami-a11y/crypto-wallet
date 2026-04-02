@@ -6,6 +6,7 @@ import Link from "next/link";
 import { MnemonicInput } from "@/modules/wallet/components/mnemonic-input";
 import { PasswordForm } from "@/modules/wallet/components/password-form";
 import { useWallet } from "@/modules/wallet/hooks/use-wallet";
+import { PAGE_ROUTES } from "@/lib/routes";
 
 type Step = "mnemonic" | "password";
 
@@ -27,7 +28,7 @@ export default function ImportPage() {
       setLoading(true);
       setError(null);
       await importWallet(mnemonic, password);
-      router.push("/dashboard");
+      router.push(PAGE_ROUTES.dashboard);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to import wallet");
     } finally {
@@ -63,7 +64,7 @@ export default function ImportPage() {
 
       <div className="px-6 pb-6 text-center text-sm text-muted-foreground">
         Want to create a new wallet?{" "}
-        <Link href="/create" className="text-primary underline">
+        <Link href={PAGE_ROUTES.create} className="text-primary underline">
           Create
         </Link>
       </div>
