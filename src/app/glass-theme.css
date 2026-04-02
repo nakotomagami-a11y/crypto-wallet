@@ -1,0 +1,118 @@
+/* ═══════════════════════════════════════════════════════════════
+   Glass Theme — Adapted from project-genys
+   Dark layered surfaces with micro-shadows. No blur.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ─── Card Utilities ──────────────────────────────────────── */
+
+@utility glass-card {
+  background: rgba(15, 20, 30, 0.6);
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.02);
+  transition: all 0.25s ease-out;
+}
+
+@utility glass-card-hover {
+  &:hover {
+    background: rgba(25, 35, 50, 0.7);
+    box-shadow: 0 8px 30px rgba(255, 255, 255, 0.03);
+  }
+}
+
+@utility glass-card-sm {
+  background: rgba(20, 28, 40, 0.7);
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(255, 255, 255, 0.02);
+  transition: all 0.25s ease-out;
+}
+
+/* ─── Panel Utilities ─────────────────────────────────────── */
+
+@utility glass-panel {
+  background: rgba(15, 20, 30, 0.6);
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.02);
+}
+
+@utility glass-panel-sidebar {
+  background: var(--surface-dim);
+  border-right: 1px solid var(--outline-dim);
+}
+
+/* ─── Input Utilities ─────────────────────────────────────── */
+
+@utility glass-input {
+  background: var(--surface-dim);
+  border: 1px solid var(--outline-dim);
+  border-radius: 12px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  &:focus {
+    outline: none;
+    border-color: #627EEA;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1), 0 0 0 3px rgba(98, 126, 234, 0.15);
+  }
+}
+
+/* ─── Shadow Utilities ────────────────────────────────────── */
+
+@utility glass-shadow {
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.02),
+    0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+@utility glass-shadow-lg {
+  box-shadow:
+    0 8px 30px rgba(0, 0, 0, 0.02),
+    0 4px 8px rgba(0, 0, 0, 0.02);
+}
+
+/* ─── Navigation Active State ─────────────────────────────── */
+
+@utility glass-nav-active {
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+}
+
+/* ─── Highlight (top-edge subtle line) ────────────────────── */
+
+@utility glass-highlight {
+  position: relative;
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.04), transparent);
+    pointer-events: none;
+    border-radius: 1px;
+    z-index: 1;
+  }
+}
+
+/* ─── Scrollbar ───────────────────────────────────────────── */
+
+@utility glass-scrollbar {
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: var(--outline-dim); border-radius: 10px; }
+  &::-webkit-scrollbar-thumb:hover { background: var(--outline); }
+}
+
+/* ─── Animation Keyframes ──────────────────────────────────── */
+
+@keyframes glass-fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes glass-scale-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}

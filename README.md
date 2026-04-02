@@ -1,36 +1,125 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Vault — Crypto Wallet Demo
+
+> **WARNING: This is a demonstration project for portfolio purposes only. It is NOT intended for production use, real funds, or mainnet transactions. Do not store real cryptocurrency or private keys with this application. Use at your own risk.**
+
+A portfolio-ready crypto wallet supporting **Ethereum (Sepolia)** and **Solana (Devnet)**. Fully client-side — no backend required. Keys are derived locally and encrypted with AES-GCM before storing in localStorage.
+
+## Features
+
+- **Multi-chain** — Ethereum and Solana from a single BIP-39 mnemonic
+- **Create / Import / Unlock** — Generate a new wallet or import an existing 12-word recovery phrase
+- **Send transactions** — Build, sign, and broadcast on either chain
+- **Receive** — Display addresses with QR codes and one-click copy
+- **Transaction history** — View recent activity via Blockscout API and Solana RPC
+- **Market data** — Search tokens, view prices, and interactive charts (line + candlestick) via CoinGecko API
+- **Token balances** — Displays native + ERC-20 / SPL token balances
+- **Encrypted storage** — AES-GCM encryption with PBKDF2 key derivation (600k iterations)
+- **Network switching** — Toggle between Ethereum Sepolia and Solana Devnet
+- **Light / Dark mode** — Theme toggle with genys-inspired design system
+- **Demo mode** — One-click demo with pre-funded testnet addresses
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 15 (App Router) |
+| Language | TypeScript |
+| UI | shadcn/ui + Tailwind CSS + custom glass theme |
+| Ethereum | ethers.js v6 |
+| Solana | @solana/web3.js |
+| Key derivation | bip39 + ed25519-hd-key |
+| State | Zustand (UI) + React Query (network data) |
+| Encryption | Web Crypto API (AES-GCM) |
+| Market data | CoinGecko API |
+| Transaction history | Blockscout API (ETH) + Solana RPC (SOL) |
+| Charts | Custom SVG (line + candlestick) |
+
+## Architecture
+
+Modular feature-based architecture inspired by production-grade patterns:
+
+```
+src/
+├── app/              # Next.js App Router (pages + layouts)
+│   ├── (auth)/       # Create, Import, Unlock (unauthenticated)
+│   └── (app)/        # Dashboard, Send, Receive, Activity, Market, Settings
+├── modules/          # Feature modules
+│   ├── wallet/       # Core: key derivation, encryption, state
+│   ├── portfolio/    # Balance fetching, token list, formatting
+│   ├── send/         # Transaction building and broadcasting
+│   ├── receive/      # Address display and QR codes
+│   ├── activity/     # Transaction history (Blockscout + Solana RPC)
+│   ├── market/       # Token search, price data, charts (CoinGecko)
+│   └── settings/     # Network selection, export, reset
+├── components/       # Shared UI (shadcn) + layout components
+├── hooks/            # App-level hooks (theme)
+├── lib/              # Providers, chain configs, query keys, utils
+└── types/            # Shared TypeScript types and enums
+```
+
+**Key patterns:**
+- Components are JSX-only — all logic lives in hooks
+- Data fetching goes through React Query — no raw fetch in components
+- Zustand holds UI state only (active network, lock status)
+- Centralized chain configs and query keys
+- Enums for transaction status/direction and chart interval/type
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+# Install dependencies
+npm install
+
+# Copy environment variables
+cp .env.example .env.local
+
+# Start development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000 — you'll be prompted to create a new wallet or click **Try Demo Mode** to explore with pre-funded testnet addresses.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `NEXT_PUBLIC_ETH_RPC_URL` | Ethereum Sepolia RPC | `https://ethereum-sepolia-rpc.publicnode.com` |
+| `NEXT_PUBLIC_SOL_RPC_URL` | Solana Devnet RPC | `https://api.devnet.solana.com` |
 
-## Learn More
+### Testnet Faucets
 
-To learn more about Next.js, take a look at the following resources:
+To test with real testnet tokens:
+- **Sepolia ETH**: https://www.alchemy.com/faucets/ethereum-sepolia
+- **Devnet SOL**: https://faucet.solana.com/
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Disclaimer
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+This project is built strictly for **educational and portfolio demonstration purposes**.
 
-## Deploy on Vercel
+- **DO NOT** use this wallet with real cryptocurrency or on mainnet networks
+- **DO NOT** store real private keys or seed phrases in this application
+- **DO NOT** rely on this for any financial transactions involving real value
+- The encryption and key management, while technically sound, have **not been professionally audited**
+- Private keys exist in browser memory during active sessions
+- localStorage is not a secure key store for production use
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+This project demonstrates knowledge of blockchain development concepts including key derivation (BIP-39/BIP-44), transaction signing, multi-chain architecture, and Web3 integration patterns. It is meant to showcase engineering skills, not to serve as a production wallet.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Security — Demo vs Production
+
+| Aspect | This Demo | Production |
+|--------|-----------|------------|
+| Key storage | localStorage + AES-GCM | Hardware-backed keystore / HSM |
+| Key memory | In-memory during session | Cleared after each signing |
+| Mnemonic backup | No verification step | Verified re-entry required |
+| Networks | Testnet only | Mainnet with confirmation dialogs |
+| Audit | None | Professional security audit |
+| Hardware wallets | Not supported | Ledger/Trezor integration |
+| CSP / XSS protection | Basic | Hardened Content Security Policy |
+
+## Key Derivation Paths
+
+- **Ethereum**: `m/44'/60'/0'/0/0`
+- **Solana**: `m/44'/501'/0'/0'`
+
+Both derived from the same BIP-39 mnemonic, matching industry-standard wallet implementations (MetaMask, Phantom, etc.).
