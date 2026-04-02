@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useWalletStore } from "@/modules/wallet/hooks/use-wallet-store";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
+import { PAGE_ROUTES } from "@/lib/routes";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -12,7 +13,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (isLocked) {
-      router.replace("/unlock");
+      router.replace(PAGE_ROUTES.unlock);
     }
   }, [isLocked, router]);
 

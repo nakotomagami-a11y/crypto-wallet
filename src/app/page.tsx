@@ -3,15 +3,16 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { hasVault } from "@/modules/wallet/utils/crypto";
+import { PAGE_ROUTES } from "@/lib/routes";
 
 export default function RootPage() {
   const router = useRouter();
 
   useEffect(() => {
     if (hasVault()) {
-      router.replace("/unlock");
+      router.replace(PAGE_ROUTES.unlock);
     } else {
-      router.replace("/create");
+      router.replace(PAGE_ROUTES.create);
     }
   }, [router]);
 

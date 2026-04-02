@@ -3,13 +3,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
 import { ChartType, type OHLCDataPoint, type PricePoint, type ChartInterval } from "@/types/market";
-
-const COINGECKO_BASE = "https://api.coingecko.com/api/v3";
+import { EXTERNAL_API } from "@/lib/routes";
 
 async function fetchOHLC(id: string, days: ChartInterval): Promise<OHLCDataPoint[]> {
-  const res = await fetch(
-    `${COINGECKO_BASE}/coins/${id}/ohlc?vs_currency=usd&days=${days}`
-  );
+  const res = await fetch(EXTERNAL_API.coingecko.ohlc(id, String(days)));
   if (!res.ok) throw new Error("Failed to fetch OHLC");
   const data: number[][] = await res.json();
   return data.map(([timestamp, open, high, low, close]) => ({
@@ -22,9 +19,7 @@ async function fetchOHLC(id: string, days: ChartInterval): Promise<OHLCDataPoint
 }
 
 async function fetchLineData(id: string, days: ChartInterval): Promise<PricePoint[]> {
-  const res = await fetch(
-    `${COINGECKO_BASE}/coins/${id}/market_chart?vs_currency=usd&days=${days}`
-  );
+  const res = await fetch(EXTERNAL_API.coingecko.marketChart(id, String(days)));
   if (!res.ok) throw new Error("Failed to fetch chart data");
   const data = await res.json();
   return (data.prices as number[][]).map(([timestamp, price]) => ({

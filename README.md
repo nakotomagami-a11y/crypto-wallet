@@ -55,7 +55,7 @@ src/
 │   └── settings/     # Network selection, export, reset
 ├── components/       # Shared UI (shadcn) + layout components
 ├── hooks/            # App-level hooks (theme)
-├── lib/              # Providers, chain configs, query keys, utils
+├── lib/              # Providers, chain configs, query keys, routes, utils
 └── types/            # Shared TypeScript types and enums
 ```
 
@@ -63,7 +63,7 @@ src/
 - Components are JSX-only — all logic lives in hooks
 - Data fetching goes through React Query — no raw fetch in components
 - Zustand holds UI state only (active network, lock status)
-- Centralized chain configs and query keys
+- Centralized routes (`lib/routes.ts`), chain configs, and query keys — no hardcoded URLs
 - Enums for transaction status/direction and chart interval/type
 
 ## Getting Started

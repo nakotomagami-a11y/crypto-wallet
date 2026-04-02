@@ -1,8 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-
-const COINGECKO_BASE = "https://api.coingecko.com/api/v3";
+import { EXTERNAL_API } from "@/lib/routes";
 
 export interface CoinPrices {
   ethereum: { usd: number; usd_24h_change: number };
@@ -10,9 +9,7 @@ export interface CoinPrices {
 }
 
 async function fetchPrices(): Promise<CoinPrices> {
-  const res = await fetch(
-    `${COINGECKO_BASE}/simple/price?ids=ethereum,solana&vs_currencies=usd&include_24hr_change=true`
-  );
+  const res = await fetch(EXTERNAL_API.coingecko.simplePrice("ethereum,solana"));
   if (!res.ok) throw new Error("Failed to fetch prices");
   return res.json();
 }
