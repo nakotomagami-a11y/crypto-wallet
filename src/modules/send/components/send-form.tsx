@@ -16,6 +16,7 @@ import { NetworkBadge } from "@/modules/wallet/components/network-badge";
 import { useWalletStore } from "@/modules/wallet/hooks/use-wallet-store";
 import { useSend } from "@/modules/send/hooks/use-send";
 import { validateAddress } from "@/modules/send/utils/validate-address";
+import { AddressBookPicker } from "@/modules/send/components/address-book-picker";
 import { CHAINS } from "@/lib/chains";
 import type { NetworkId } from "@/types/wallet";
 import { toast } from "sonner";
@@ -95,6 +96,11 @@ export function SendForm() {
                   : "Enter Solana address"
               }
               className="font-mono text-sm"
+            />
+            <AddressBookPicker
+              network={activeNetwork}
+              onSelect={setTo}
+              currentAddress={to}
             />
           </div>
 
