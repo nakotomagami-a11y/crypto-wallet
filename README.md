@@ -22,6 +22,7 @@ A portfolio-ready crypto wallet supporting **Ethereum (Sepolia)** and **Solana (
 - **NFT gallery** — View ERC-721 NFTs (Ethereum via Blockscout) and Solana NFTs (via DAS API) in a grid
 - **Portfolio chart** — Interactive SVG chart showing total portfolio value over time (24H/7D/30D) with hover tooltip
 - **Watchlist** — Star tokens from market pages, track prices on dashboard with 24h change
+- **Export CSV** — Download transaction history as CSV from the activity page
 
 ## Tech Stack
 
