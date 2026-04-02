@@ -1,14 +1,21 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { useWalletStore } from "@/modules/wallet/hooks/use-wallet-store";
 import { deriveAllAccounts } from "@/modules/wallet/utils/derive";
 
-const MAX_ACCOUNTS = 5;
+const ACCOUNTS_STORAGE_KEY = "vault-account-count";
+
+function getStoredCount(): number {
+  if (typeof window === "undefined") return 1;
+  const stored = localStorage.getItem(ACCOUNTS_STORAGE_KEY);
+  return stored ? Math.max(1, parseInt(stored, 10)) : 1;
+}
 
 export function AccountSelector() {
   const { accountIndex, mnemonic, isDemo, setAccount } = useWalletStore();
   const [open, setOpen] = useState(false);
+  const [accountCount, setAccountCount] = useState(getStoredCount);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -21,8 +28,15 @@ export function AccountSelector() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Demo mode doesn't support multi-account (no mnemonic)
   if (isDemo || !mnemonic) return null;
+
+  const accounts = useMemo(() =>
+    Array.from({ length: accountCount }, (_, i) => {
+      const { eth } = deriveAllAccounts(mnemonic, i);
+      return { index: i, ethAddress: eth.address };
+    }),
+    [mnemonic, accountCount]
+  );
 
   function handleSwitch(index: number) {
     if (!mnemonic || index === accountIndex) {
@@ -34,11 +48,11 @@ export function AccountSelector() {
     setOpen(false);
   }
 
-  // Pre-derive addresses for the dropdown
-  const accounts = Array.from({ length: MAX_ACCOUNTS }, (_, i) => {
-    const { eth } = deriveAllAccounts(mnemonic, i);
-    return { index: i, ethAddress: eth.address };
-  });
+  function handleAddAccount() {
+    const next = accountCount + 1;
+    setAccountCount(next);
+    localStorage.setItem(ACCOUNTS_STORAGE_KEY, String(next));
+  }
 
   return (
     <div ref={wrapperRef} className="relative">
@@ -58,30 +72,41 @@ export function AccountSelector() {
           <div className="p-2 text-[10px] text-muted-foreground uppercase tracking-wider px-3">
             Switch Account
           </div>
-          {accounts.map((acc) => (
-            <button
-              key={acc.index}
-              onClick={() => handleSwitch(acc.index)}
-              className={`flex w-full items-center gap-2.5 px-3 py-2.5 text-left transition-colors ${
-                acc.index === accountIndex
-                  ? "bg-[rgba(255,255,255,0.08)]"
-                  : "hover:bg-[rgba(255,255,255,0.04)]"
-              }`}
-            >
-              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-eth-blue text-[10px] text-white font-bold">
-                {acc.index + 1}
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-xs font-medium">Account {acc.index + 1}</p>
-                <p className="font-mono text-[10px] text-muted-foreground truncate">
-                  {acc.ethAddress}
-                </p>
-              </div>
-              {acc.index === accountIndex && (
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-chart-green shrink-0"><path d="M20 6 9 17l-5-5"/></svg>
-              )}
-            </button>
-          ))}
+          <div className="max-h-60 overflow-y-auto">
+            {accounts.map((acc) => (
+              <button
+                key={acc.index}
+                onClick={() => handleSwitch(acc.index)}
+                className={`flex w-full items-center gap-2.5 px-3 py-2.5 text-left transition-colors ${
+                  acc.index === accountIndex
+                    ? "bg-[rgba(255,255,255,0.08)]"
+                    : "hover:bg-[rgba(255,255,255,0.04)]"
+                }`}
+              >
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-eth-blue text-[10px] text-white font-bold">
+                  {acc.index + 1}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-medium">Account {acc.index + 1}</p>
+                  <p className="font-mono text-[10px] text-muted-foreground truncate">
+                    {acc.ethAddress}
+                  </p>
+                </div>
+                {acc.index === accountIndex && (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-chart-green shrink-0"><path d="M20 6 9 17l-5-5"/></svg>
+                )}
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={handleAddAccount}
+            className="flex w-full items-center gap-2.5 px-3 py-2.5 text-left border-t border-[var(--outline-dim)] transition-colors hover:bg-[rgba(255,255,255,0.04)]"
+          >
+            <div className="flex h-6 w-6 items-center justify-center rounded-full border border-dashed border-[var(--outline)] text-muted-foreground">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            </div>
+            <span className="text-xs text-muted-foreground">Add Account</span>
+          </button>
         </div>
       )}
     </div>
