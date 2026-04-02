@@ -1,6 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { WatchlistButton } from "@/modules/market/components/watchlist-button";
 import { formatPrice, formatPercentChange, formatMarketCap, formatVolume } from "@/modules/market/utils/format";
 import type { TokenDetail as TokenDetailType } from "@/types/market";
 
@@ -25,6 +26,12 @@ export function TokenDetail({ token }: TokenDetailProps) {
             <span className="text-sm text-muted-foreground uppercase">
               {token.symbol}
             </span>
+            <WatchlistButton
+              id={token.id}
+              name={token.name}
+              symbol={token.symbol}
+              thumb={token.image}
+            />
           </div>
           <div className="flex items-center gap-3 mt-1">
             <span className="text-2xl font-bold font-mono">

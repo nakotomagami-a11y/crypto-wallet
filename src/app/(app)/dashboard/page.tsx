@@ -6,6 +6,7 @@ import { TokenList } from "@/modules/portfolio/components/token-list";
 import { PortfolioSummary } from "@/modules/portfolio/components/portfolio-summary";
 import { FaucetLinks } from "@/modules/portfolio/components/faucet-links";
 import { PortfolioChart } from "@/modules/portfolio/components/portfolio-chart";
+import { WatchlistCard } from "@/modules/portfolio/components/watchlist-card";
 import { usePrices } from "@/modules/portfolio/hooks/use-prices";
 import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
@@ -80,6 +81,8 @@ export default function DashboardPage() {
           <PortfolioChart />
 
           <PortfolioSummary balances={nativeBalances} />
+
+          <WatchlistCard />
 
           <FaucetLinks />
 
