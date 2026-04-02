@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import type { NetworkId } from "@/types/wallet";
 
 const STORAGE_KEY = "vault-address-book";
 
 export interface SavedAddress {
   label: string;
   address: string;
-  network: "ethereum" | "solana";
+  network: NetworkId;
 }
 
 function load(): SavedAddress[] {
@@ -40,7 +41,7 @@ export function useAddressBook() {
     });
   }, []);
 
-  const removeAddress = useCallback((address: string, network: string) => {
+  const removeAddress = useCallback((address: string, network: NetworkId) => {
     setAddresses((prev) => {
       const next = prev.filter(
         (a) => !(a.address.toLowerCase() === address.toLowerCase() && a.network === network)
@@ -51,7 +52,7 @@ export function useAddressBook() {
   }, []);
 
   const getByNetwork = useCallback(
-    (network: "ethereum" | "solana") => addresses.filter((a) => a.network === network),
+    (network: NetworkId) => addresses.filter((a) => a.network === network),
     [addresses]
   );
 
