@@ -13,11 +13,8 @@ import {
 import { useWalletStore } from "@/modules/wallet/hooks/use-wallet-store";
 import { deriveEthWallet, deriveSolWallet } from "@/modules/wallet/utils/derive";
 import { CHAINS } from "@/lib/chains";
+import { ERC20_TRANSFER_ABI } from "@/lib/constants";
 import type { NetworkId } from "@/types/wallet";
-
-const ERC20_TRANSFER_ABI = [
-  "function transfer(address to, uint256 amount) returns (bool)",
-];
 
 interface SendParams {
   to: string;
