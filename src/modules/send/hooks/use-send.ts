@@ -13,40 +13,47 @@ import {
 import { useWalletStore } from "@/modules/wallet/hooks/use-wallet-store";
 import { deriveEthWallet, deriveSolWallet } from "@/modules/wallet/utils/derive";
 import { CHAINS } from "@/lib/chains";
+import { ERC20_TRANSFER_ABI } from "@/lib/constants";
 import type { NetworkId } from "@/types/wallet";
 
 interface SendParams {
   to: string;
   amount: string;
   network: NetworkId;
+  contractAddress?: string;
+  decimals?: number;
 }
 
-async function sendEthTransaction(
+async function sendEthNative(to: string, amount: string, mnemonic: string): Promise<string> {
+  const provider = new ethers.JsonRpcProvider(CHAINS.ethereum.rpcUrl);
+  const { privateKey } = deriveEthWallet(mnemonic);
+  const wallet = new ethers.Wallet(privateKey, provider);
+  const tx = await wallet.sendTransaction({ to, value: ethers.parseEther(amount) });
+  await tx.wait();
+  return tx.hash;
+}
+
+async function sendERC20(
   to: string,
   amount: string,
+  contractAddress: string,
+  decimals: number,
   mnemonic: string
 ): Promise<string> {
   const provider = new ethers.JsonRpcProvider(CHAINS.ethereum.rpcUrl);
   const { privateKey } = deriveEthWallet(mnemonic);
   const wallet = new ethers.Wallet(privateKey, provider);
-  const tx = await wallet.sendTransaction({
-    to,
-    value: ethers.parseEther(amount),
-  });
+  const contract = new ethers.Contract(contractAddress, ERC20_TRANSFER_ABI, wallet);
+  const parsedAmount = ethers.parseUnits(amount, decimals);
+  const tx = await contract.transfer(to, parsedAmount);
   await tx.wait();
   return tx.hash;
 }
 
-async function sendSolTransaction(
-  to: string,
-  amount: string,
-  mnemonic: string
-): Promise<string> {
+async function sendSolTransaction(to: string, amount: string, mnemonic: string): Promise<string> {
   const connection = new Connection(CHAINS.solana.rpcUrl, "confirmed");
   const { privateKey } = deriveSolWallet(mnemonic);
-  const keypair = Keypair.fromSecretKey(
-    Uint8Array.from(Buffer.from(privateKey, "hex"))
-  );
+  const keypair = Keypair.fromSecretKey(Uint8Array.from(Buffer.from(privateKey, "hex")));
   const transaction = new Transaction().add(
     SystemProgram.transfer({
       fromPubkey: keypair.publicKey,
@@ -64,11 +71,14 @@ export function useSend() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ to, amount, network }: SendParams) => {
+    mutationFn: async ({ to, amount, network, contractAddress, decimals }: SendParams) => {
       if (!mnemonic) throw new Error("Wallet is locked");
 
       if (network === "ethereum") {
-        return sendEthTransaction(to, amount, mnemonic);
+        if (contractAddress && decimals !== undefined) {
+          return sendERC20(to, amount, contractAddress, decimals, mnemonic);
+        }
+        return sendEthNative(to, amount, mnemonic);
       }
       return sendSolTransaction(to, amount, mnemonic);
     },

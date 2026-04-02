@@ -6,29 +6,48 @@ import { Connection, PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { useWalletStore } from "@/modules/wallet/hooks/use-wallet-store";
 import { CHAINS } from "@/lib/chains";
 import { queryKeys } from "@/lib/query-keys";
+import {
+  METAPLEX_TOKEN_METADATA_PROGRAM,
+  SPL_TOKEN_PROGRAM,
+  SEPOLIA_ERC20_TOKENS,
+  ERC20_READ_ABI,
+  MAX_SPL_TOKENS,
+} from "@/lib/constants";
 import type { TokenBalance } from "@/types/transaction";
 
-// ERC-20 ABI for balanceOf + decimals + symbol
-const ERC20_ABI = [
-  "function balanceOf(address) view returns (uint256)",
-  "function decimals() view returns (uint8)",
-  "function symbol() view returns (string)",
-  "function name() view returns (string)",
-];
+const metaplexProgramId = new PublicKey(METAPLEX_TOKEN_METADATA_PROGRAM);
+const splTokenProgramId = new PublicKey(SPL_TOKEN_PROGRAM);
 
-// Known Sepolia ERC-20 tokens to check
-const SEPOLIA_TOKENS = [
-  { address: "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238", name: "USD Coin", symbol: "USDC", decimals: 6 },
-  { address: "0x7169D38820dfd117C3FA1f22a697dBA58d90BA06", name: "Dai Stablecoin", symbol: "DAI", decimals: 18 },
-  { address: "0xaA8E23Fb1079EA71e0a56F48a2aA51851D8433D0", name: "Tether USD", symbol: "USDT", decimals: 6 },
-  { address: "0x779877A7B0D9E8603169DdbD7836e478b4624789", name: "Chainlink", symbol: "LINK", decimals: 18 },
-];
+async function resolveTokenName(
+  connection: Connection,
+  mintAddress: string
+): Promise<{ name: string; symbol: string } | null> {
+  const mint = new PublicKey(mintAddress);
+  const [metadataPDA] = PublicKey.findProgramAddressSync(
+    [Buffer.from("metadata"), metaplexProgramId.toBytes(), mint.toBytes()],
+    metaplexProgramId
+  );
+
+  const accountInfo = await connection.getAccountInfo(metadataPDA);
+  if (!accountInfo?.data) return null;
+
+  const data = accountInfo.data;
+  try {
+    const nameBytes = data.subarray(65, 101);
+    const name = Buffer.from(nameBytes).toString("utf8").replace(/\0/g, "").trim();
+    const symbolBytes = data.subarray(101, 115);
+    const symbol = Buffer.from(symbolBytes).toString("utf8").replace(/\0/g, "").trim();
+    if (name && symbol) return { name, symbol };
+  } catch {
+    return null;
+  }
+  return null;
+}
 
 async function fetchEthBalances(address: string): Promise<TokenBalance[]> {
   const provider = new ethers.JsonRpcProvider(CHAINS.ethereum.rpcUrl);
   const results: TokenBalance[] = [];
 
-  // Native ETH
   const ethBalance = await provider.getBalance(address);
   results.push({
     symbol: "ETH",
@@ -38,10 +57,9 @@ async function fetchEthBalances(address: string): Promise<TokenBalance[]> {
     network: "ethereum",
   });
 
-  // ERC-20 tokens
-  for (const token of SEPOLIA_TOKENS) {
+  for (const token of SEPOLIA_ERC20_TOKENS) {
     try {
-      const contract = new ethers.Contract(token.address, ERC20_ABI, provider);
+      const contract = new ethers.Contract(token.address, ERC20_READ_ABI, provider);
       const rawBalance: bigint = await contract.balanceOf(address);
       if (rawBalance > BigInt(0)) {
         results.push({
@@ -54,7 +72,7 @@ async function fetchEthBalances(address: string): Promise<TokenBalance[]> {
         });
       }
     } catch {
-      // Token contract may not exist on this network — skip
+      // Token contract may not exist on this network
     }
   }
 
@@ -66,7 +84,6 @@ async function fetchSolBalances(address: string): Promise<TokenBalance[]> {
   const pubkey = new PublicKey(address);
   const results: TokenBalance[] = [];
 
-  // Native SOL
   const solBalance = await connection.getBalance(pubkey);
   results.push({
     symbol: "SOL",
@@ -76,29 +93,47 @@ async function fetchSolBalances(address: string): Promise<TokenBalance[]> {
     network: "solana",
   });
 
-  // SPL tokens
   try {
     const tokenAccounts = await connection.getParsedTokenAccountsByOwner(pubkey, {
-      programId: new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"),
+      programId: splTokenProgramId,
     });
 
-    for (const { account } of tokenAccounts.value) {
+    const nonZero = tokenAccounts.value
+      .filter((ta) => {
+        const amount = ta.account.data.parsed?.info?.tokenAmount;
+        return amount && amount.uiAmount > 0;
+      })
+      .slice(0, MAX_SPL_TOKENS);
+
+    for (const { account } of nonZero) {
       const parsed = account.data.parsed?.info;
       if (!parsed) continue;
       const amount = parsed.tokenAmount;
-      if (amount.uiAmount > 0) {
-        results.push({
-          symbol: parsed.mint.slice(0, 6) + "...",
-          name: "SPL Token",
-          balance: amount.uiAmountString ?? amount.uiAmount.toString(),
-          decimals: amount.decimals,
-          network: "solana",
-          contractAddress: parsed.mint,
-        });
+      const mint = parsed.mint as string;
+
+      let tokenName = "SPL Token";
+      let tokenSymbol = mint.slice(0, 4) + "..." + mint.slice(-4);
+      try {
+        const metadata = await resolveTokenName(connection, mint);
+        if (metadata) {
+          tokenName = metadata.name;
+          tokenSymbol = metadata.symbol;
+        }
+      } catch {
+        // Metadata not available
       }
+
+      results.push({
+        symbol: tokenSymbol,
+        name: tokenName,
+        balance: amount.uiAmountString ?? amount.uiAmount.toString(),
+        decimals: amount.decimals,
+        network: "solana",
+        contractAddress: mint,
+      });
     }
   } catch {
-    // SPL token fetch may fail on devnet — skip
+    // SPL token fetch may fail on devnet
   }
 
   return results;
@@ -126,11 +161,7 @@ export function useBalances() {
     retry: 2,
   });
 
-  const allBalances = [
-    ...(ethQuery.data ?? []),
-    ...(solQuery.data ?? []),
-  ];
-
+  const allBalances = [...(ethQuery.data ?? []), ...(solQuery.data ?? [])];
   const isLoading =
     (ethEnabled && ethQuery.isPending) || (solEnabled && solQuery.isPending);
 
@@ -138,9 +169,6 @@ export function useBalances() {
     balances: allBalances,
     isLoading,
     error: ethQuery.error || solQuery.error,
-    refetch: () => {
-      ethQuery.refetch();
-      solQuery.refetch();
-    },
+    refetch: () => { ethQuery.refetch(); solQuery.refetch(); },
   };
 }

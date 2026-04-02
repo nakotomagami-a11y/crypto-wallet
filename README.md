@@ -8,7 +8,7 @@ A portfolio-ready crypto wallet supporting **Ethereum (Sepolia)** and **Solana (
 
 - **Multi-chain** — Ethereum and Solana from a single BIP-39 mnemonic
 - **Create / Import / Unlock** — Generate a new wallet or import an existing 12-word recovery phrase
-- **Send transactions** — Build, sign, and broadcast on either chain
+- **Send transactions** — Build, sign, and broadcast native tokens and ERC-20s on either chain
 - **Receive** — Display addresses with QR codes and one-click copy
 - **Transaction history** — View recent activity via Blockscout API and Solana RPC, click-to-copy tx hashes
 - **Market data** — Search tokens, view prices, and interactive charts (line + candlestick) via CoinGecko API

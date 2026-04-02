@@ -1,10 +1,7 @@
 import { create } from "zustand";
 import type { NetworkId } from "@/types/wallet";
 import { DEFAULT_NETWORK } from "@/lib/chains";
-
-// Public testnet addresses with funds for demo mode
-export const DEMO_ETH_ADDRESS = "0x388C818CA8B9251b393131C08a736A67ccB19297";
-export const DEMO_SOL_ADDRESS = "vines1vzrYbzLMRdu58ou5XTby4qAqVRLmqo36NKPTg";
+import { DEMO_ETH_ADDRESS, DEMO_SOL_ADDRESS } from "@/lib/constants";
 
 interface WalletStore {
   isLocked: boolean;
