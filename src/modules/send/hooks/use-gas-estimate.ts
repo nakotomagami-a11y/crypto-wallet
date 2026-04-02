@@ -4,8 +4,20 @@ import { useQuery } from "@tanstack/react-query";
 import { ethers } from "ethers";
 import { Connection } from "@solana/web3.js";
 import { CHAINS } from "@/lib/chains";
+import { EXTERNAL_API } from "@/lib/routes";
 import { queryKeys } from "@/lib/query-keys";
 import type { NetworkId } from "@/types/wallet";
+
+async function fetchUsdPrice(coinId: string): Promise<number | null> {
+  try {
+    const res = await fetch(EXTERNAL_API.coingecko.simplePrice(coinId));
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data[coinId]?.usd ?? null;
+  } catch {
+    return null;
+  }
+}
 
 export interface GasEstimate {
   fee: string;
@@ -25,8 +37,13 @@ async function estimateEthGas(to: string): Promise<GasEstimate> {
   const feeEth = ethers.formatEther(totalWei);
   const gasPriceGwei = ethers.formatUnits(gasPrice, "gwei");
 
+  const ethPrice = await fetchUsdPrice("ethereum");
+  const feeNum = parseFloat(feeEth);
+  const feeUsd = ethPrice ? `$${(feeNum * ethPrice).toFixed(4)}` : undefined;
+
   return {
-    fee: parseFloat(feeEth).toFixed(6),
+    fee: feeNum.toFixed(6),
+    feeUsd,
     symbol: "ETH",
     details: `${parseFloat(gasPriceGwei).toFixed(1)} Gwei · ${gasLimit.toString()} gas`,
   };
@@ -46,8 +63,13 @@ async function estimateSolFee(): Promise<GasEstimate> {
   const totalLamports = baseFee + Math.round(avgPriority);
   const feeSol = (totalLamports / 1e9).toFixed(9);
 
+  const solPrice = await fetchUsdPrice("solana");
+  const feeNum = parseFloat(feeSol);
+  const feeUsd = solPrice ? `$${(feeNum * solPrice).toFixed(6)}` : undefined;
+
   return {
     fee: feeSol,
+    feeUsd,
     symbol: "SOL",
     details: `Base: ${baseFee} lamports${avgPriority > 0 ? ` + ~${Math.round(avgPriority)} priority` : ""}`,
   };

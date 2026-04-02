@@ -24,9 +24,14 @@ export function GasEstimator({ network, to }: GasEstimatorProps) {
           <span className="text-xs text-muted-foreground">Estimating...</span>
         ) : data ? (
           <div>
-            <span className="font-mono text-xs font-medium">
-              {data.fee} {data.symbol}
-            </span>
+            <div className="flex items-center gap-1.5 justify-end">
+              <span className="font-mono text-xs font-medium">
+                {data.fee} {data.symbol}
+              </span>
+              {data.feeUsd && (
+                <span className="text-[10px] text-muted-foreground">({data.feeUsd})</span>
+              )}
+            </div>
             <p className="text-[10px] text-muted-foreground">{data.details}</p>
           </div>
         ) : null}
