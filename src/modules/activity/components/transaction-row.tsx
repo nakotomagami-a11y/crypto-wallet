@@ -2,6 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { TransactionStatus, TransactionDirection, type Transaction } from "@/types/transaction";
+import { toast } from "sonner";
 
 interface TransactionRowProps {
   tx: Transaction;
@@ -39,9 +40,16 @@ export function TransactionRow({ tx }: TransactionRowProps) {
         </div>
         <div>
           <p className="text-sm font-medium capitalize">{tx.direction}</p>
-          <p className="font-mono text-xs text-muted-foreground">
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText(tx.hash);
+              toast.success("Transaction hash copied!");
+            }}
+            className="font-mono text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+            title="Click to copy full hash"
+          >
             {tx.hash.slice(0, 12)}...{tx.hash.slice(-6)}
-          </p>
+          </button>
         </div>
       </div>
 

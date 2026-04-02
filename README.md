@@ -10,7 +10,7 @@ A portfolio-ready crypto wallet supporting **Ethereum (Sepolia)** and **Solana (
 - **Create / Import / Unlock** — Generate a new wallet or import an existing 12-word recovery phrase
 - **Send transactions** — Build, sign, and broadcast on either chain
 - **Receive** — Display addresses with QR codes and one-click copy
-- **Transaction history** — View recent activity via Blockscout API and Solana RPC
+- **Transaction history** — View recent activity via Blockscout API and Solana RPC, click-to-copy tx hashes
 - **Market data** — Search tokens, view prices, and interactive charts (line + candlestick) via CoinGecko API
 - **Token balances** — Displays native + ERC-20 / SPL token balances
 - **Encrypted storage** — AES-GCM encryption with PBKDF2 key derivation (600k iterations)
