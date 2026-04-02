@@ -20,6 +20,7 @@ A portfolio-ready crypto wallet supporting **Ethereum (Sepolia)** and **Solana (
 - **Faucet links** — Quick access to Sepolia ETH and Devnet SOL faucets from dashboard
 - **Address book** — Save, select, and remove frequently used recipient addresses (persisted in localStorage)
 - **NFT gallery** — View ERC-721 NFTs (Ethereum via Blockscout) and Solana NFTs (via DAS API) in a grid
+- **Portfolio chart** — Interactive SVG chart showing total portfolio value over time (24H/7D/30D) with hover tooltip
 
 ## Tech Stack
 
@@ -35,7 +36,7 @@ A portfolio-ready crypto wallet supporting **Ethereum (Sepolia)** and **Solana (
 | Encryption | Web Crypto API (AES-GCM) |
 | Market data | CoinGecko API |
 | Transaction history | Blockscout API (ETH) + Solana RPC (SOL) |
-| Charts | Custom SVG (line + candlestick) |
+| Charts | TradingView Lightweight Charts v5 |
 
 ## Architecture
 
